@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_APP_URL || "https://your-domain.com",
+    process.env.NEXT_PUBLIC_APP_URL || "https://indexa-dev.vercel.app",
   ),
 
   title: {
