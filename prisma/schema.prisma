@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nodes BookmarkNode[]
+}
+
+model BookmarkNode {
+  id          String    @id @default(uuid())
+  userId      String
+  parentId    String?
+  type        NodeType
+  title       String
+  description String?
+  url         String?
+  isFavorite  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  user     User           @relation(fields: [userId], references: [id])
+  parent   BookmarkNode?  @relation("NodeTree", fields: [parentId], references: [id])
+  children BookmarkNode[] @relation("NodeTree")
+
+  @@index([userId, parentId])
+  @@index([userId, deletedAt])
+}
+
+enum NodeType {
+  BOOKMARK
+  FOLDER
+}

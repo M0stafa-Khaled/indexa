@@ -1,0 +1,25 @@
+export default function icon() {
+  return new Response(
+    `<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect width="32" height="32" rx="6" fill="url(#grad)"/>
+      <g transform="translate(16, 16)">
+        <rect x="-8" y="-8" width="16" height="16" rx="3" fill="none" stroke="white" stroke-width="1.5" opacity="0.3"/>
+        <rect x="-6" y="-6" width="12" height="12" rx="2.5" fill="none" stroke="white" stroke-width="1.5" opacity="0.5"/>
+        <rect x="-4" y="-4" width="8" height="8" rx="2" fill="white" opacity="0.9"/>
+        <text x="0" y="2" font-family="system-ui, sans-serif" font-size="7" font-weight="800" fill="#6366f1" text-anchor="middle">I</text>
+      </g>
+    </svg>`,
+    {
+      headers: {
+        'Content-Type': 'image/svg+xml',
+        'Cache-Control': 'public, max-age=31536000, immutable',
+      },
+    }
+  );
+}

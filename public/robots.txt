@@ -1,0 +1,12 @@
+# Indexa - Production Robots.txt
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Sitemaps
+Sitemap: https://your-domain.com/sitemap.xml
+
+# Crawl-delay for bots (optional)
+Crawl-delay: 1
