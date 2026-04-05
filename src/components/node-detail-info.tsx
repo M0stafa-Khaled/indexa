@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import type { BookmarkNode } from "@/types";
 import Image from "next/image";
+import { getHostname } from "@/lib/url-utils";
 
 interface NodeDetailInfoProps {
   node: BookmarkNode;
@@ -14,14 +15,7 @@ interface NodeDetailInfoProps {
 
 export function NodeDetailInfo({ node }: NodeDetailInfoProps) {
   // Extract hostname from URL
-  let hostname = "";
-  if (node.url) {
-    try {
-      hostname = new URL(node.url).hostname;
-    } catch {
-      hostname = node.url;
-    }
-  }
+  const hostname = getHostname(node.url || "");
 
   const handleCopyUrl = () => {
     if (node.url) {

@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Folder,
   FolderOpen,
-  Globe,
   ChevronRight,
   Pencil,
   Trash2,
@@ -21,6 +20,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
+import Image from "next/image";
+import { getHostname } from "@/lib/url-utils";
 
 interface TreeNodeDisplayProps {
   node: TreeNode;
@@ -80,6 +81,8 @@ export function TreeNodeDisplay({
 
   // Show actions on mobile always, or on hover/selected for larger screens
   const showActions = isMobile || isHovered || isSelected;
+
+  const hostname = getHostname(node.url || "");
 
   return (
     <div
@@ -164,7 +167,16 @@ export function TreeNodeDisplay({
         ) : (
           <Tooltip>
             <TooltipTrigger asChild>
-              <Globe className="size-4 text-primary" />
+              <Image
+                src={`https://www.google.com/s2/favicons?domain=${hostname}&sz=64`}
+                className="size-4 rounded"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+                alt={node.title || "Bookmark"}
+                height={16}
+                width={16}
+              />
             </TooltipTrigger>
             <TooltipContent side="bottom">
               {node.url || "No URL"}

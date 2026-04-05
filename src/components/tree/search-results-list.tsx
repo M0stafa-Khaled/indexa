@@ -1,8 +1,10 @@
 "use client";
 
-import { FolderOpen, Globe, Clock, FileSearch } from "lucide-react";
+import { FolderOpen, Clock, FileSearch } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { BookmarkNode } from "@/types";
+import Image from "next/image";
+import { getHostname } from "@/lib/url-utils";
 
 interface SearchResultsListProps {
   results: BookmarkNode[] | null;
@@ -53,7 +55,16 @@ export function SearchResultsList({
               {node.type === "FOLDER" ? (
                 <FolderOpen className="size-4 shrink-0 text-amber-500" />
               ) : (
-                <Globe className="size-4 shrink-0 text-primary" />
+                <Image
+                  src={`https://www.google.com/s2/favicons?domain=${getHostname(node.url || "")}&sz=64`}
+                  className="size-4 rounded"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                  alt={node.title || "Bookmark"}
+                  height={16}
+                  width={16}
+                />
               )}
               <div className="flex-1 min-w-0">
                 <div className="truncate font-medium">{node.title}</div>

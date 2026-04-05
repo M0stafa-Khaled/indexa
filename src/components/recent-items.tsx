@@ -1,9 +1,11 @@
 "use client";
 
-import { FolderOpen, Bookmark, Clock, ArrowRight } from "lucide-react";
+import { FolderOpen, Clock, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { type Variants, motion } from "framer-motion";
+import Image from "next/image";
+import { getHostname } from "@/lib/url-utils";
 
 interface RecentItem {
   id: string;
@@ -46,7 +48,16 @@ export function RecentItems({
                   {item.type === "FOLDER" ? (
                     <FolderOpen className="size-4 text-amber-500" />
                   ) : (
-                    <Bookmark className="size-4 text-primary" />
+                    <Image
+                      src={`https://www.google.com/s2/favicons?domain=${getHostname(item.url || "")}&sz=64`}
+                      className="size-4 rounded"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = "none";
+                      }}
+                      alt={item.title || "Bookmark"}
+                      height={16}
+                      width={16}
+                    />
                   )}
                 </div>
                 <div className="flex-1 min-w-0">

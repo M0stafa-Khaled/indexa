@@ -2,7 +2,6 @@
 
 import {
   FolderOpen,
-  Bookmark,
   Layers,
   BookmarkPlus,
   FolderPlus,
@@ -12,6 +11,8 @@ import { useTreeStore } from "@/store/tree-store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { TreeNode } from "@/types";
+import Image from "next/image";
+import { getHostname } from "@/lib/url-utils";
 
 interface NodeDetailChildrenProps {
   node: TreeNode;
@@ -92,7 +93,16 @@ export function NodeDetailChildren({
                     {child.type === "FOLDER" ? (
                       <FolderOpen className="size-3.5 text-amber-500" />
                     ) : (
-                      <Bookmark className="size-3.5 text-primary" />
+                      <Image
+                        src={`https://www.google.com/s2/favicons?domain=${getHostname(child.url || "")}&sz=64`}
+                        className="size-4 rounded"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                        alt={child.title || "Bookmark"}
+                        height={16}
+                        width={16}
+                      />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
