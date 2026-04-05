@@ -8,7 +8,7 @@ import { type Variants, motion } from "framer-motion";
 interface RecentItem {
   id: string;
   title: string;
-  type: string;
+  type: "FOLDER" | "BOOKMARK";
   createdAt: string;
   url: string | null;
   isFavorite: boolean;
@@ -43,7 +43,7 @@ export function RecentItems({
                 onClick={() => onSelectItem(item.id)}
               >
                 <div className="flex size-8 items-center justify-center rounded-lg bg-muted shrink-0 group-hover:scale-105 transition-transform duration-150">
-                  {item.type === "folder" ? (
+                  {item.type === "FOLDER" ? (
                     <FolderOpen className="size-4 text-amber-500" />
                   ) : (
                     <Bookmark className="size-4 text-primary" />

@@ -1,15 +1,16 @@
 import { create } from "zustand";
-import type { BookmarkNode, TreeNode, SortOption, ViewMode } from "@/types";
+import { getTreeStructure } from "@/lib/actions";
+import type { TreeNode, SortOption, ViewMode } from "@/types";
 
 interface TreeState {
   // Data
   tree: TreeNode[];
-  flatNodes: Map<string, BookmarkNode>;
+  flatNodes: Map<string, TreeNode>;
   selectedNodeId: string | null;
   expandedNodeIds: Set<string>;
-  breadcrumbs: BookmarkNode[];
+  breadcrumbs: TreeNode[];
   searchQuery: string;
-  searchResults: BookmarkNode[] | null;
+  searchResults: TreeNode[] | null;
   isLoading: boolean;
 
   // View & Sort
@@ -18,16 +19,17 @@ interface TreeState {
 
   // Actions
   setTree: (tree: TreeNode[]) => void;
+  refreshTree: () => Promise<void>;
   setSelectedNode: (id: string | null) => void;
   toggleExpanded: (id: string) => void;
   setExpanded: (id: string, expanded: boolean) => void;
-  setBreadcrumbs: (nodes: BookmarkNode[]) => void;
+  setBreadcrumbs: (nodes: TreeNode[]) => void;
   setSearchQuery: (query: string) => void;
-  setSearchResults: (results: BookmarkNode[] | null) => void;
+  setSearchResults: (results: TreeNode[] | null) => void;
   setIsLoading: (loading: boolean) => void;
   removeNode: (id: string) => void;
-  addNode: (node: BookmarkNode, parentId?: string | null) => void;
-  updateNodeInTree: (node: BookmarkNode) => void;
+  addNode: (node: TreeNode, parentId?: string | null) => void;
+  updateNodeInTree: (node: TreeNode) => void;
   setViewMode: (mode: ViewMode) => void;
   setSortOption: (option: SortOption) => void;
 }
@@ -45,7 +47,7 @@ export const useTreeStore = create<TreeState>((set) => ({
   sortOption: "date-newest",
 
   setTree: (tree) => {
-    const flatNodes = new Map<string, BookmarkNode>();
+    const flatNodes = new Map<string, TreeNode>();
     const collectNodes = (nodes: TreeNode[]) => {
       nodes.forEach((node) => {
         flatNodes.set(node.id, node);
@@ -65,6 +67,29 @@ export const useTreeStore = create<TreeState>((set) => ({
     });
 
     set({ tree, flatNodes, expandedNodeIds });
+  },
+
+  refreshTree: async () => {
+    const { tree } = await getTreeStructure();
+    if (tree) {
+      const flatNodes = new Map<string, TreeNode>();
+      const collectNodes = (nodes: TreeNode[]) => {
+        nodes.forEach((node) => {
+          flatNodes.set(node.id, node);
+          if (node.children) {
+            collectNodes(node.children);
+          }
+        });
+      };
+      collectNodes(tree);
+
+      set((state) => ({
+        tree,
+        flatNodes,
+        // Preserve expanded state
+        expandedNodeIds: state.expandedNodeIds,
+      }));
+    }
   },
 
   setSelectedNode: (id) => set({ selectedNodeId: id }),

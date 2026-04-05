@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTreeStore } from "@/store/tree-store";
-import { moveNode, getTreeStructure } from "@/lib/actions";
+import { moveNodeAction, getTreeStructure } from "@/lib/actions";
 import type { TreeNode } from "@/types";
 
 interface MoveNodeDialogProps {
@@ -98,7 +98,7 @@ export function MoveNodeDialog({
   const handleMove = async () => {
     setIsMoving(true);
     try {
-      const { node: movedNode, error: moveError } = await moveNode(
+      const { node: movedNode, error: moveError } = await moveNodeAction(
         node.id,
         selectedParent || undefined,
       );

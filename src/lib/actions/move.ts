@@ -5,7 +5,7 @@ import { moveNodeSchema } from "@/lib/schemas";
 import { serializeNode } from "@/lib/serializers";
 import { requireAuth } from "../auth";
 
-export const moveNode = async (id: string, newParentId?: string) => {
+export const moveNodeAction = async (id: string, newParentId?: string) => {
   try {
     const userId = await requireAuth();
 

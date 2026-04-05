@@ -6,12 +6,11 @@ import { toast } from "sonner";
 import { useTreeStore } from "@/store/tree-store";
 import { updateNode } from "@/lib/actions";
 import type { TreeNode } from "@/types";
-import {
-  ContextMenu,
-  ContextMenuTrigger,
-} from "@/components/ui/context-menu";
+import { ContextMenu, ContextMenuTrigger } from "@/components/ui/context-menu";
 import { TreeNodeDisplay } from "./tree-node-display";
 import { TreeNodeActions } from "./tree-node-actions";
+import { useDraggable, useDroppable } from "@dnd-kit/core";
+import { cn } from "@/lib/utils";
 
 interface TreeNodeItemProps {
   node: TreeNode;
@@ -151,9 +150,7 @@ export function TreeNodeItem({
       if (updated) {
         updateNodeInTree(updated);
         toast.success(
-          updated.isFavorite
-            ? "Added to favorites"
-            : "Removed from favorites"
+          updated.isFavorite ? "Added to favorites" : "Removed from favorites",
         );
       }
     } catch {
@@ -161,31 +158,62 @@ export function TreeNodeItem({
     }
   };
 
+  // Drag-and-drop
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setDraggableRef,
+    isDragging,
+  } = useDraggable({
+    id: node.id,
+    data: node,
+  });
+
+  const { setNodeRef: setDroppableRef, isOver } = useDroppable({
+    id: node.id,
+    data: node,
+  });
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <div>
       <ContextMenu>
         <ContextMenuTrigger asChild>
-          <TreeNodeDisplay
-            node={node}
-            depth={depth}
-            isSelected={isSelected}
-            isExpanded={isExpanded}
-            isHovered={isHovered}
-            isRenaming={isRenaming}
-            renameValue={renameValue}
-            onRenameChange={handleRenameChange}
-            onRenameSubmit={handleRenameSubmit}
-            onRenameKeyDown={handleRenameKeyDown}
-            onDoubleClick={handleDoubleClick}
-            onClick={handleClick}
-            onKeyDown={handleKeyDown}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            onToggleExpanded={() => toggleExpanded(node.id)}
-            onEditClick={() => onEdit(node)}
-            onDeleteClick={() => onDelete(node)}
-            onToggleFavorite={handleToggleFavorite}
-          />
+          <div
+            ref={(el) => {
+              setDraggableRef(el);
+              setDroppableRef(el);
+            }}
+            className={cn(isOver && "bg-accent/50", isDragging && "opacity-50")}
+            onContextMenu={handleContextMenu}
+            {...attributes}
+            {...listeners}
+          >
+            <TreeNodeDisplay
+              node={node}
+              depth={depth}
+              isSelected={isSelected}
+              isExpanded={isExpanded}
+              isHovered={isHovered}
+              isRenaming={isRenaming}
+              renameValue={renameValue}
+              onRenameChange={handleRenameChange}
+              onRenameSubmit={handleRenameSubmit}
+              onRenameKeyDown={handleRenameKeyDown}
+              onDoubleClick={handleDoubleClick}
+              onClick={handleClick}
+              onKeyDown={handleKeyDown}
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              onToggleExpanded={() => toggleExpanded(node.id)}
+              onEditClick={() => onEdit(node)}
+              onDeleteClick={() => onDelete(node)}
+              onToggleFavorite={handleToggleFavorite}
+            />
+          </div>
         </ContextMenuTrigger>
         <TreeNodeActions
           node={node}

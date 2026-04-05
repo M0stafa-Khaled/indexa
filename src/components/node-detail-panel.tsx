@@ -41,9 +41,7 @@ export function NodeDetailPanel({
       if (updated) {
         updateNodeInTree(updated);
         toast.success(
-          updated.isFavorite
-            ? "Added to favorites"
-            : "Removed from favorites"
+          updated.isFavorite ? "Added to favorites" : "Removed from favorites",
         );
       }
     } catch {
@@ -87,7 +85,7 @@ export function NodeDetailPanel({
   return (
     <ScrollArea className="h-full scrollbar-thin">
       <motion.div
-        className="p-6 space-y-6"
+        className="p-4 sm:p-6 space-y-4 sm:space-y-6"
         initial="hidden"
         animate="visible"
         exit="exit"

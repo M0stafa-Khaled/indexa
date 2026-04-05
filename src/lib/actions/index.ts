@@ -2,7 +2,13 @@
 export { registerUser, validateCredentials } from "./auth-actions";
 
 // Node CRUD operations
-export { getAllNodes, getNode, createNode, updateNode, deleteNode } from "./node";
+export {
+  getAllNodes,
+  getNode,
+  createNode,
+  updateNode,
+  deleteNode,
+} from "./node";
 
 // Tree structure
 export { getTreeStructure } from "./tree";
@@ -17,7 +23,7 @@ export { getFavorites } from "./favorites";
 export { getTrash, restoreNode, permanentDeleteNode } from "./trash";
 
 // Move operations
-export { moveNode } from "./move";
+export { moveNodeAction } from "./move";
 
 // Import/Export
 export { importNodes, exportNodes } from "./import-export";

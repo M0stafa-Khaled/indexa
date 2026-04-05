@@ -27,7 +27,6 @@ import {
 import { createFolderSchema, createBookmarkSchema } from "@/lib/schemas";
 import { useTreeStore } from "@/store/tree-store";
 import { createNode } from "@/lib/actions";
-import type { BookmarkNode } from "@/types";
 
 interface CreateNodeDialogProps {
   open: boolean;
@@ -57,7 +56,7 @@ export function CreateNodeDialog({
 }: CreateNodeDialogProps) {
   const [type, setType] = React.useState<"folder" | "bookmark">(defaultType);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const { selectedNodeId, addNode } = useTreeStore();
+  const { selectedNodeId, flatNodes, addNode } = useTreeStore();
 
   React.useEffect(() => {
     if (open) setType(defaultType);
@@ -82,6 +81,22 @@ export function CreateNodeDialog({
     },
   });
 
+  // Update parentId when dialog opens or propParentId changes
+  React.useEffect(() => {
+    if (open) {
+      const parentId = propParentId ?? undefined;
+      folderForm.setValue("parentId", parentId);
+      bookmarkForm.setValue("parentId", parentId);
+    }
+  }, [open, propParentId, folderForm, bookmarkForm]);
+
+  // Get parent folder name for display
+  const parentFolderName = React.useMemo(() => {
+    if (!propParentId) return null;
+    const parent = flatNodes.get(propParentId);
+    return parent?.title || null;
+  }, [propParentId, flatNodes]);
+
   const handleClose = () => {
     folderForm.reset();
     bookmarkForm.reset();
@@ -91,10 +106,12 @@ export function CreateNodeDialog({
   const onSubmit = async (values: FolderFormValues | BookmarkFormValues) => {
     setIsSubmitting(true);
     try {
+      // Use propParentId if provided, otherwise no parent (root level)
+      const parentId = propParentId || undefined;
+
       const { node, error } = await createNode({
         type,
-        parentId:
-          values.parentId || propParentId || selectedNodeId || undefined,
+        parentId,
         title: values.title,
         description: values.description || undefined,
         url:
@@ -111,10 +128,7 @@ export function CreateNodeDialog({
         throw new Error("Failed to create node");
       }
 
-      addNode(
-        node as BookmarkNode,
-        values.parentId || propParentId || selectedNodeId || null,
-      );
+      addNode(node, propParentId || null);
       toast.success(
         `${type === "folder" ? "Folder" : "Bookmark"} created successfully`,
       );
@@ -144,6 +158,11 @@ export function CreateNodeDialog({
             {type === "folder"
               ? "Create a new folder to organize your bookmarks."
               : "Add a new bookmark to your collection."}
+            {parentFolderName && (
+              <span className="block mt-1 text-xs text-primary">
+                Creating in: <strong>{parentFolderName}</strong>
+              </span>
+            )}
           </DialogDescription>
         </DialogHeader>
 

@@ -20,6 +20,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface TreeNodeDisplayProps {
   node: TreeNode;
@@ -65,6 +66,7 @@ export function TreeNodeDisplay({
   onToggleFavorite,
 }: TreeNodeDisplayProps) {
   const renameInputRef = React.useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
   const isFolder = node.type === "FOLDER";
   const childrenCount = node.children?.length ?? 0;
 
@@ -76,14 +78,17 @@ export function TreeNodeDisplay({
     }
   }, [isRenaming]);
 
+  // Show actions on mobile always, or on hover/selected for larger screens
+  const showActions = isMobile || isHovered || isSelected;
+
   return (
     <div
       className={cn(
         "group flex items-center gap-1 rounded-md px-1 py-1 cursor-pointer text-sm relative",
         "transition-all duration-150 ease-out",
-        "hover:bg-accent hover:scale-[1.01]",
+        "hover:bg-accent",
         isSelected
-          ? "bg-primary/10 text-primary font-medium hover:bg-primary/15 hover:scale-100"
+          ? "bg-primary/10 text-primary font-medium hover:bg-primary/15"
           : "",
         // Left border accent for folders vs bookmarks
         isSelected &&
@@ -118,10 +123,10 @@ export function TreeNodeDisplay({
         {isHovered && !isRenaming && (
           <motion.div
             initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: 16 }}
+            animate={{ opacity: 1, width: 14 }}
             exit={{ opacity: 0, width: 0 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
-            className="flex items-center justify-center shrink-0 text-muted-foreground/40"
+            className="flex items-center justify-center shrink-0 text-muted-foreground/40 cursor-grab"
           >
             <GripVertical className="size-3" />
           </motion.div>
@@ -149,7 +154,7 @@ export function TreeNodeDisplay({
       </button>
 
       {/* Icon */}
-      <div className="shrink-0 mr-1 transition-transform duration-150 group-hover:scale-110">
+      <div className="shrink-0 mr-1 transition-transform duration-150">
         {isFolder ? (
           isExpanded ? (
             <FolderOpen className="size-4 text-amber-500" />
@@ -194,11 +199,11 @@ export function TreeNodeDisplay({
 
       {/* Hover actions - fade in */}
       <AnimatePresence>
-        {(isHovered || isSelected) && !isRenaming && (
+        {showActions && !isRenaming && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             className="flex items-center gap-0.5 shrink-0"
           >
@@ -210,7 +215,7 @@ export function TreeNodeDisplay({
                     size="icon"
                     className={cn(
                       "size-6 opacity-0 group-hover:opacity-100 focus:opacity-100 hover:bg-amber-500/10 transition-all duration-150",
-                      node.isFavorite && "opacity-100"
+                      node.isFavorite && "opacity-100",
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -223,13 +228,15 @@ export function TreeNodeDisplay({
                         "size-3",
                         node.isFavorite
                           ? "fill-amber-500 text-amber-500"
-                          : "text-muted-foreground"
+                          : "text-muted-foreground",
                       )}
                     />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  {node.isFavorite ? "Remove from favorites" : "Add to favorites"}
+                  {node.isFavorite
+                    ? "Remove from favorites"
+                    : "Add to favorites"}
                 </TooltipContent>
               </Tooltip>
             )}

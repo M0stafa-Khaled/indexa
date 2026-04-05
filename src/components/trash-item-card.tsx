@@ -62,7 +62,7 @@ export function TrashItemCard({
         <Button
           variant="ghost"
           size="icon"
-          className="size-7 text-muted-foreground hover:text-destructive"
+          className="size-7 text-destructive hover:text-destructive!"
           onClick={() => onDelete(item.id)}
         >
           <Trash className="size-3.5" />

@@ -17,7 +17,7 @@ export function WelcomeHeroCard({
 }: WelcomeHeroCardProps) {
   return (
     <motion.div variants={itemVariants}>
-      <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-primary via-primary/80 to-indigo-700 p-6 text-white">
+      <div className="font-sans relative overflow-hidden rounded-2xl bg-linear-to-br from-primary via-primary/80 to-indigo-700 p-6 text-white">
         {/* Animated gradient border overlay */}
         <div className="absolute inset-0 rounded-2xl border border-white/10 pointer-events-none" />
 

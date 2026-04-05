@@ -30,12 +30,12 @@ export function NodeDetailChildren({
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
           <Layers className="size-4" />
-          Contents
+          <span className="hidden sm:inline">Contents</span>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           {onNewBookmark && (
             <Button
               variant="outline"
@@ -44,7 +44,7 @@ export function NodeDetailChildren({
               onClick={onNewBookmark}
             >
               <BookmarkPlus className="size-3" />
-              Bookmark
+              <span className="hidden sm:inline">Bookmark</span>
             </Button>
           )}
           {onNewFolder && (
@@ -55,7 +55,7 @@ export function NodeDetailChildren({
               onClick={onNewFolder}
             >
               <FolderPlus className="size-3" />
-              Folder
+              <span className="hidden sm:inline">Folder</span>
             </Button>
           )}
         </div>
@@ -71,8 +71,8 @@ export function NodeDetailChildren({
         </div>
       ) : (
         <>
-          <div className="flex items-center gap-3">
-            <div className="text-3xl font-bold tabular-nums">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="text-2xl sm:text-3xl font-bold tabular-nums">
               {childrenCount}
             </div>
             <div className="text-xs text-muted-foreground">

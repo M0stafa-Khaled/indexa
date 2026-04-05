@@ -23,7 +23,7 @@ export function StatsPanel({ onNewFolder, onNewBookmark }: StatsPanelProps) {
     const allNodes: Array<{
       id: string;
       title: string;
-      type: string;
+      type: "BOOKMARK" | "FOLDER";
       createdAt: string;
       url: string | null;
       isFavorite: boolean;
@@ -39,7 +39,7 @@ export function StatsPanel({ onNewFolder, onNewBookmark }: StatsPanelProps) {
       allNodes.push({
         id: node.id,
         title: node.title,
-        type: node.type,
+        type: node.type as "BOOKMARK" | "FOLDER",
         createdAt: node.createdAt,
         url: node.url,
         isFavorite: node.isFavorite,

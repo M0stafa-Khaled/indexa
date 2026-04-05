@@ -45,13 +45,13 @@ export function NodeDetailInfo({ node }: NodeDetailInfoProps) {
                 href={node.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-4 p-4 hover:bg-accent/30 transition-all duration-150 group"
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 hover:bg-accent/30 transition-all duration-150 group"
               >
-                <div className="flex size-10 items-center justify-center rounded-lg bg-muted shrink-0 group-hover:scale-105 transition-transform duration-150">
+                <div className="flex size-9 sm:size-10 items-center justify-center rounded-lg bg-muted shrink-0 group-hover:scale-105 transition-transform duration-150">
                   <Image
                     src={`https://www.google.com/s2/favicons?domain=${hostname}&sz=64`}
                     alt=""
-                    className="size-6 rounded"
+                    className="size-5 sm:size-6 rounded"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = "none";
                     }}
@@ -60,18 +60,18 @@ export function NodeDetailInfo({ node }: NodeDetailInfoProps) {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-base font-semibold text-primary group-hover:underline truncate">
+                  <div className="text-sm sm:text-base font-semibold text-primary group-hover:underline truncate">
                     {hostname}
                   </div>
                   <div className="truncate text-xs text-muted-foreground mt-0.5">
                     {node.url}
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 gap-1.5 text-xs hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors duration-150"
+                    className="h-7 sm:h-8 gap-1.5 text-xs hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors duration-150"
                     onClick={(e) => {
                       e.preventDefault();
                       handleCopyUrl();
@@ -83,14 +83,14 @@ export function NodeDetailInfo({ node }: NodeDetailInfoProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="h-8 gap-1.5 text-xs hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors duration-150"
+                    className="h-7 sm:h-8 gap-1.5 text-xs hover:bg-primary/10 hover:text-primary hover:border-primary/30 transition-colors duration-150"
                     onClick={(e) => {
                       e.preventDefault();
                       window.open(node.url!, "_blank", "noopener,noreferrer");
                     }}
                   >
                     <ExternalLink className="size-3.5" />
-                    Open
+                    <span className="hidden sm:inline">Open</span>
                   </Button>
                 </div>
               </a>

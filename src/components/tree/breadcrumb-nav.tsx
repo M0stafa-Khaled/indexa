@@ -33,6 +33,7 @@ export function BreadcrumbNav() {
         updatedAt: "",
         deletedAt: null,
         isFavorite: false,
+        children: [],
       },
       ...crumbs.slice(-3),
     ];

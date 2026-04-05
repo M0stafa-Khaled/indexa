@@ -27,7 +27,7 @@ import {
 import { updateNodeSchema } from "@/lib/schemas";
 import { useTreeStore } from "@/store/tree-store";
 import { updateNode } from "@/lib/actions";
-import type { TreeNode, BookmarkNode } from "@/types";
+import type { TreeNode } from "@/types";
 
 interface EditNodeDialogProps {
   node: TreeNode;
@@ -94,7 +94,7 @@ export function EditNodeDialog({
         throw new Error("Failed to update node");
       }
 
-      updateNodeInTree(updatedNode as BookmarkNode);
+      updateNodeInTree(updatedNode);
       toast.success("Updated successfully");
       handleClose();
     } catch (err) {

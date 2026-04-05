@@ -15,11 +15,14 @@ interface StatsCardGridProps {
 
 export function StatsCardGrid({ stats, itemVariants }: StatsCardGridProps) {
   return (
-    <motion.div variants={itemVariants} className="grid grid-cols-3 gap-3">
+    <motion.div
+      variants={itemVariants}
+      className="grid grid-cols-1 sm:grid-cols-3 gap-3"
+    >
       {/* Total Bookmarks Card */}
       <Card className="relative overflow-hidden card-hover-lift">
         <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary rounded-l-xl" />
-        <CardContent className="p-4">
+        <CardContent>
           <div className="flex items-center gap-2 mb-2">
             <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
               <Bookmark className="size-4 text-primary" />
@@ -35,7 +38,7 @@ export function StatsCardGrid({ stats, itemVariants }: StatsCardGridProps) {
       {/* Total Folders Card */}
       <Card className="relative overflow-hidden card-hover-lift">
         <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500 rounded-l-xl" />
-        <CardContent className="p-4">
+        <CardContent>
           <div className="flex items-center gap-2 mb-2">
             <div className="flex size-8 items-center justify-center rounded-lg bg-amber-500/10">
               <FolderOpen className="size-4 text-amber-500" />
@@ -51,7 +54,7 @@ export function StatsCardGrid({ stats, itemVariants }: StatsCardGridProps) {
       {/* Total Favorites Card */}
       <Card className="relative overflow-hidden card-hover-lift">
         <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-400 rounded-l-xl" />
-        <CardContent className="p-4">
+        <CardContent>
           <div className="flex items-center gap-2 mb-2">
             <div className="flex size-8 items-center justify-center rounded-lg bg-amber-400/10">
               <Star className="size-4 text-amber-400" />

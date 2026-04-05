@@ -40,7 +40,7 @@ import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts";
 import { TrashView } from "@/components/trash-view";
 import { FavoritesView } from "@/components/favorites-view";
 import { ImportExportButtons } from "@/components/import-export-buttons";
-import type { TreeNode, BookmarkNode, ViewMode } from "@/types";
+import type { TreeNode, ViewMode } from "@/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 export function AppShell() {
@@ -103,7 +103,7 @@ export function AppShell() {
       return;
     }
 
-    const crumbs: BookmarkNode[] = [];
+    const crumbs: TreeNode[] = [];
     let currentId: string | null | undefined = selectedNodeId;
     while (currentId) {
       const node = flatNodes.get(currentId);
@@ -209,7 +209,7 @@ export function AppShell() {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-background bg-mesh-gradient">
+      <div className="font-sans flex h-screen items-center justify-center bg-background bg-mesh-gradient">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="size-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground font-medium">
@@ -223,7 +223,7 @@ export function AppShell() {
   const sidebarContent = <TreeSidebar />;
 
   return (
-    <div className="flex h-screen flex-col bg-background bg-mesh-gradient overflow-hidden">
+    <div className="font-sans flex h-screen flex-col bg-background bg-mesh-gradient overflow-hidden">
       {/* Top Header */}
       <header className="flex h-14 shrink-0 items-center gap-4 border-b px-4 overflow-hidden min-w-0 shadow-[0_1px_3px_-1px_oklch(0_0_0/8%)] dark:shadow-[0_1px_4px_-1px_oklch(0_0_0/25%)] z-10 relative">
         {/* Mobile menu + Logo */}
@@ -237,8 +237,8 @@ export function AppShell() {
               </SheetTrigger>
               <SheetContent side="left" className="w-80 p-0">
                 <SheetHeader className="border-b px-4 py-3">
-                  <SheetTitle className="flex items-center gap-2 text-base">
-                    <Layers className="size-4 text-primary" />
+                  <SheetTitle className="flex items-center gap-2 text-base font-sans">
+                    <Layers className="size-4 text-primary " />
                     Bookmarks
                   </SheetTitle>
                 </SheetHeader>
@@ -250,7 +250,7 @@ export function AppShell() {
             <div className="flex size-7 items-center justify-center rounded-lg bg-primary/10 hover:bg-primary/15 transition-colors duration-200">
               <Layers className="size-4 text-primary" />
             </div>
-            <span className="hidden font-bold tracking-tight sm:inline-block">
+            <span className="hidden font-bold tracking-tight sm:inline-block font-sans">
               Indexa
             </span>
           </div>
@@ -278,9 +278,9 @@ export function AppShell() {
       </header>
 
       {/* Stats Bar with View Switcher */}
-      <div className="flex h-8 shrink-0 items-center gap-3 border-b px-4 bg-linear-to-r from-muted/40 via-muted/20 to-muted/40">
+      <div className="flex h-10 shrink-0 items-center gap-3 border-b px-4 bg-linear-to-r from-muted/40 via-muted/20 to-muted/40">
         {/* View switcher */}
-        <div className="flex items-center gap-0.5 rounded-lg bg-background border p-0.5">
+        <div className="flex items-center gap-0.5 rounded-lg bg-background border p-1">
           <button
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
               viewMode === "tree"
@@ -289,7 +289,7 @@ export function AppShell() {
             }`}
             onClick={() => setViewMode("tree")}
           >
-            <Layers className="size-3" />
+            <Layers className="size-3.5" />
             <span className="hidden sm:inline">All</span>
           </button>
           <button
@@ -300,7 +300,7 @@ export function AppShell() {
             }`}
             onClick={() => setViewMode("favorites")}
           >
-            <Star className="size-3" />
+            <Star className="size-3.5" />
             <span className="hidden sm:inline">Favorites</span>
           </button>
           <button
@@ -311,7 +311,7 @@ export function AppShell() {
             }`}
             onClick={() => setViewMode("trash")}
           >
-            <Trash2 className="size-3" />
+            <Trash2 className="size-3.5" />
             <span className="hidden sm:inline">Trash</span>
           </button>
         </div>
@@ -321,7 +321,7 @@ export function AppShell() {
         {/* Stats */}
         <div className="flex items-center gap-3 text-xs text-muted-foreground flex-1">
           <div className="flex items-center gap-1.5">
-            <Bookmark className="size-3" />
+            <Bookmark className="size-3.5" />
             <span className="tabular-nums font-medium">{stats.bookmarks}</span>
             <span className="hidden sm:inline">
               bookmark{stats.bookmarks !== 1 ? "s" : ""}
@@ -373,7 +373,7 @@ export function AppShell() {
         ) : (
           <ResizablePanelGroup orientation="horizontal">
             {/* Sidebar */}
-            <ResizablePanel defaultSize={270} minSize={270} maxSize={800}>
+            <ResizablePanel defaultSize={300} minSize={300} maxSize={800}>
               {sidebarContent}
             </ResizablePanel>
             <ResizableHandle withHandle />
@@ -404,8 +404,8 @@ export function AppShell() {
       {/* Footer */}
       <footer className="flex h-9 shrink-0 items-center justify-between border-t px-4">
         <p className="text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} Indexa &mdash; Organize your digital
-          world
+          &copy; {new Date().getFullYear() + " "} Indexa &mdash; Organize your
+          digital world
         </p>
         <div className="hidden sm:flex items-center gap-3 text-[10px] text-muted-foreground/50">
           <span>
@@ -434,6 +434,7 @@ export function AppShell() {
         open={createOpen}
         onOpenChange={setCreateOpen}
         defaultType={createType}
+        parentId={selectedNode?.type === "FOLDER" ? selectedNode.id : undefined}
       />
       {editNode && (
         <EditNodeDialog

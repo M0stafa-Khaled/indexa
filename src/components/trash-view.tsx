@@ -6,7 +6,6 @@ import { Trash2, Trash, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -127,7 +126,7 @@ export function TrashView({ onRestored }: TrashViewProps) {
   }
 
   return (
-    <ScrollArea className="h-full">
+    <div className="size-full overflow-y-auto scrollbar-thin scrollbar-thumb-muted scrollbar-track-transparent">
       <motion.div
         className="p-6 space-y-6"
         variants={containerVariants}
@@ -227,7 +226,7 @@ export function TrashView({ onRestored }: TrashViewProps) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handlePermanentDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive! text-destructive-foreground! hover:bg-destructive/90!"
             >
               Delete forever
             </AlertDialogAction>
@@ -253,13 +252,13 @@ export function TrashView({ onRestored }: TrashViewProps) {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleEmptyTrash}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive! text-destructive-foreground! hover:bg-destructive/90!"
             >
               Empty trash
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </ScrollArea>
+    </div>
   );
 }
