@@ -6,25 +6,33 @@ import { requireAuth } from "../auth";
 
 const importItemSchema = z.object({
   title: z.string().min(1),
-  type: z.enum(["bookmark", "folder"]),
+  type: z.enum(["bookmark", "folder", "BOOKMARK", "FOLDER"]),
   url: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
   isFavorite: z.boolean().optional(),
   children: z.lazy(() => z.array(importItemSchema)).optional(),
 });
 
-export const importNodes = async (
-  data:
-    | z.infer<typeof importItemSchema>[]
-    | { nodes: z.infer<typeof importItemSchema>[] },
-) => {
+type ImportNodesInput =
+  | z.infer<typeof importItemSchema>[]
+  | { nodes: z.infer<typeof importItemSchema>[] }
+  | { children: z.infer<typeof importItemSchema>[] }
+  | z.infer<typeof importItemSchema>;
+
+export const importNodes = async (data: ImportNodesInput) => {
   try {
     const userId = await requireAuth();
 
-    const result = z
-      .array(importItemSchema)
-      .safeParse(Array.isArray(data) ? data : data.nodes || data);
+    const normalizedData = Array.isArray(data)
+      ? data
+      : "nodes" in data
+        ? data.nodes
+        : "children" in data
+          ? data.children
+          : [data];
 
+    const result = z.array(importItemSchema).safeParse(normalizedData);
+    console.log("result: ", data);
     if (!result.success) {
       throw new Error(
         `Invalid import data: ${JSON.stringify(result.error.flatten().fieldErrors)}`,
@@ -55,10 +63,10 @@ export const importNodes = async (
         nodesToCreate.push({
           userId,
           parentId,
-          type: item.type,
+          type: item.type.toUpperCase() as "FOLDER" | "BOOKMARK",
           title: item.title,
           description: item.description || null,
-          url: item.type === "BOOKMARK" ? item.url || null : null,
+          url: item.type.toUpperCase() === "BOOKMARK" ? item.url || null : null,
           isFavorite: item.isFavorite || false,
         });
         importedCount++;
@@ -70,43 +78,47 @@ export const importNodes = async (
 
     collectNodes(result.data, null);
 
-    await db.$transaction(async (tx) => {
-      for (let i = 0; i < nodesToCreate.length; i++) {
-        const nodeData = { ...nodesToCreate[i] };
-        if (
-          nodeData.parentId &&
-          idMap.get(nodeData.parentId)?.startsWith("temp-")
-        ) {
-          // Will be resolved after the parent is created
+    await db.$transaction(
+      async (tx) => {
+        // First pass: create all nodes without parent relationships
+        for (let i = 0; i < nodesToCreate.length; i++) {
+          const nodeData = nodesToCreate[i];
+          const created = await tx.bookmarkNode.create({
+            data: {
+              userId: nodeData.userId,
+              parentId: null, // Set all to null initially
+              type: nodeData.type,
+              title: nodeData.title,
+              description: nodeData.description,
+              url: nodeData.url,
+              isFavorite: nodeData.isFavorite,
+            },
+          });
+          const tempId = `temp-${i}`;
+          idMap.set(tempId, created.id);
         }
-        const created = await tx.bookmarkNode.create({
-          data: {
-            userId: nodeData.userId,
-            parentId:
-              nodeData.parentId && !nodeData.parentId.startsWith("temp-")
-                ? nodeData.parentId
-                : null,
-            type: nodeData.type,
-            title: nodeData.title,
-            description: nodeData.description,
-            url: nodeData.url,
-            isFavorite: nodeData.isFavorite,
-          },
-        });
-        const tempId = `temp-${i}`;
-        idMap.set(tempId, created.id);
 
-        if (nodeData.parentId && nodeData.parentId.startsWith("temp-")) {
-          const realParentId = idMap.get(nodeData.parentId);
-          if (realParentId && realParentId !== created.id) {
-            await tx.bookmarkNode.update({
-              where: { id: created.id },
-              data: { parentId: realParentId },
-            });
+        // Second pass: update parent relationships
+        for (let i = 0; i < nodesToCreate.length; i++) {
+          const nodeData = nodesToCreate[i];
+          if (nodeData.parentId) {
+            const realParentId = nodeData.parentId.startsWith("temp-")
+              ? idMap.get(nodeData.parentId)
+              : nodeData.parentId;
+            const currentId = idMap.get(`temp-${i}`);
+            if (realParentId && currentId && realParentId !== currentId) {
+              await tx.bookmarkNode.update({
+                where: { id: currentId },
+                data: { parentId: realParentId },
+              });
+            }
           }
         }
-      }
-    });
+      },
+      {
+        timeout: 10000000, // Increase timeout to 30 seconds for large imports
+      },
+    );
 
     return { success: true, imported: importedCount, error: null };
   } catch (error) {
@@ -136,7 +148,7 @@ export const exportNodes = async () => {
 
     const parsedNodes = nodes.map((node) => ({
       title: node.title,
-      type: node.type,
+      type: node.type.toLowerCase() as "bookmark" | "folder",
       url: node.url,
       description: node.description,
       isFavorite: node.isFavorite,

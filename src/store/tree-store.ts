@@ -58,13 +58,8 @@ export const useTreeStore = create<TreeState>((set) => ({
     };
     collectNodes(tree);
 
-    // Auto-expand root folders
+    // Start with all folders collapsed
     const expandedNodeIds = new Set<string>();
-    tree.forEach((node) => {
-      if (node.type === "FOLDER") {
-        expandedNodeIds.add(node.id);
-      }
-    });
 
     set({ tree, flatNodes, expandedNodeIds });
   },
