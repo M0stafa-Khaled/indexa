@@ -56,20 +56,26 @@ export const searchNodesSchema = z.object({
   type: NodeType.optional(),
 });
 
+type ImportNode = {
+  title: string;
+  type: "bookmark" | "folder";
+  url?: string | null;
+  description?: string | null;
+  children?: ImportNode[];
+};
+
+const importNodeSchema: z.ZodType<ImportNode> = z.lazy(() =>
+  z.object({
+    title: z.string().min(1),
+    type: z.enum(["bookmark", "folder"]),
+    url: z.string().optional().nullable(),
+    description: z.string().optional().nullable(),
+    children: z.array(importNodeSchema).optional(),
+  }),
+);
+
 export const importSchema = z.object({
-  nodes: z
-    .array(
-      z.object({
-        title: z.string().min(1),
-        type: z.enum(["bookmark", "folder"]),
-        url: z.string().optional().nullable(),
-        description: z.string().optional().nullable(),
-        children: z
-          .lazy(() => z.array(z.lazy(() => importSchema.element)))
-          .optional(),
-      }),
-    )
-    .min(1, "At least one node is required"),
+  nodes: z.array(importNodeSchema).min(1, "At least one node is required"),
 });
 
 export type CreateFolderInput = z.infer<typeof createFolderSchema>;
@@ -80,3 +86,34 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type SearchNodesInput = z.infer<typeof searchNodesSchema>;
 export type ImportInput = z.infer<typeof importSchema>;
+
+export const updateProfileSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Name is required")
+    .max(100, "Name too long")
+    .optional(),
+  email: z.string().email("Invalid email address").optional(),
+});
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Current password is required"),
+    newPassword: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+export const deleteAccountSchema = z.object({
+  password: z.string().min(1, "Password is required"),
+  confirmation: z.literal("DELETE", {
+    message: 'Type "DELETE" to confirm',
+  }),
+});
+
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export type DeleteAccountInput = z.infer<typeof deleteAccountSchema>;

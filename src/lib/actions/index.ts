@@ -27,3 +27,12 @@ export { moveNodeAction } from "./move";
 
 // Import/Export
 export { importNodes, exportNodes } from "./import-export";
+
+// Profile operations
+export {
+  getUserProfile,
+  updateProfile,
+  changePassword,
+  deleteAccount,
+  getAccountStats,
+} from "./profile-actions";

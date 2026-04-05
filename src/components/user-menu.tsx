@@ -1,9 +1,10 @@
 "use client";
 
 import { signOut, useSession } from "next-auth/react";
-import { LogOut, Settings } from "lucide-react";
+import { LogOut, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +18,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 
 export function UserMenu() {
   const { data: session } = useSession();
+  const router = useRouter();
 
   if (!session?.user) return null;
 
@@ -63,6 +65,10 @@ export function UserMenu() {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => router.push("/profile")}>
+              <User className="mr-2 size-4" />
+              Profile
+            </DropdownMenuItem>
             <DropdownMenuItem disabled>
               <Settings className="mr-2 size-4" />
               Settings

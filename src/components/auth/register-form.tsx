@@ -32,7 +32,7 @@ export function RegisterForm({ onSuccess, onModeChange }: RegisterFormProps) {
   const handleSubmit = async (values: RegisterInput) => {
     setIsLoading(true);
     try {
-      const { success, user, error } = await registerUser(
+      const { success, error } = await registerUser(
         values.email,
         values.password,
         values.name,
